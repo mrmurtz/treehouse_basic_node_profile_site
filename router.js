@@ -7,6 +7,7 @@ function home(req, res){
     renderer.view("header", {}, res);
     renderer.view("search", {}, res);
     renderer.view("footer", {}, res);
+    res.end();
   };
 };
 
@@ -16,28 +17,25 @@ function user(req, res){
     res.writeHead(200, {'Content-Type': 'text/plain'});
     renderer.view("header", {}, res);
 
-    // get json for profile
     var studentProfile = new Profile(username);
-    // on 'end'
     studentProfile.on('end', function(profileJSON){
-      // show profile
-      // store the values which we need
+
       var values = {
         avatarUrl: profileJSON.gravatar_url,
         username: profileJSON.profile_name,
         badges: profileJSON.badges.length,
         javascriptPoints: profileJSON.points.JavaScript,
       }
-      // simple response
-      res.write(values.username + ' has ' + values.badges + '\n');
-      res.write('Footer\n');
+      renderer.view("profile", values, res);
+      renderer.view("footer", {}, res);
       res.end();
     });
 
-    studentProfile.on('error', function(error){
-      // show error
-      res.write(error.message + '\n');
-      res.end('Footer \n');
+    studentProfile.on("error", function(error){
+      renderer.view("error", {errorMessage: error.message}, res);
+      renderer.view("search", {}, res);
+      renderer.view("footer", {}, res);
+      res.end();
     });
   }
 }
