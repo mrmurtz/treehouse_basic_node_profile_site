@@ -4,14 +4,13 @@
 var router = require('./router.js')
 var http = require('http');
 
-var hostname = '127.0.0.1';
 var port = process.env.PORT || 3000;
 
   http.createServer(function(req, res){
     router.home(req, res);
     router.user(req, res);
-  }).listen(3000);
-  console.log('Listening on ' + hostname + ":" + port + "/");
+  }).listen(port);
+  console.log('Listening at ' + port);
 
 // 4. Function the handles reading of files and merge in values
   // read from files
