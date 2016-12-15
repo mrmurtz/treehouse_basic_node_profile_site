@@ -1,20 +1,31 @@
 var Profile = require("./profile.js");
 var renderer = require("./renderer.js");
+var querystring = require("querystring");
+
+var commonHeaders   = {'Content-Type':'text/html'};
 
 function home(req, res){
   if (req.url === '/') {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    renderer.view("header", {}, res);
-    renderer.view("search", {}, res);
-    renderer.view("footer", {}, res);
-    res.end();
+    if (req.method.toLowerCase() === "get") {
+      res.writeHead(200, commonHeaders);
+      renderer.view("header", {}, res);
+      renderer.view("search", {}, res);
+      renderer.view("footer", {}, res);
+      res.end();
+    } else {
+      req.on('data', function(postBody){
+        var query = querystring.parse(postBody.toString());
+        res.writeHead(303, {"location": "/"+ query.username});
+        res.end()
+      });
+    }
   };
 };
 
 function user(req, res){
   var username = req.url.replace('/', '');
   if (username.length > 0) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.writeHead(200, commonHeaders);
     renderer.view("header", {}, res);
 
     var studentProfile = new Profile(username);
